@@ -15,3 +15,8 @@ function mapOptionalUser(user) {
 export async function createUser(user) {
     return getUser().insertOne(user).then((result) => result.insertedId.toString())
 }
+
+// 로그인 유지
+export async function findById(id) {
+    return getUser().find({ _id: new MongoDB.ObjectId(id) }).next().then(mapOptionalUser)
+}

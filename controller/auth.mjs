@@ -44,3 +44,34 @@ async function createJwtToken(id) {
         expiresIn: config.jwt.expiresInSec
     })    
 }
+
+// 로그인
+export async function login(req, res) {
+    const {userid, userpw} = req.body
+
+    // ID 확인
+    const user = await authRepository.findByUserid(userid)
+    if(!user){
+        console.log("존재하지 않는 ID 입력")
+        return res.status(401).json({message: "아이디 또는 비밀번호를 확인해주세요"})
+    }
+
+    // 비밀번호 확인
+    const isValidPw = await bcrypt.compare(userpw, user.userpw)
+    if(!isValidPw){
+        console.log("일치하지 않는 비밀번호 입력")
+        return res.status(401).json({message: "아이디 또는 비밀번호를 확인해주세요"})
+    }
+
+    // 모두 일치하면 토큰발급
+    const token = await createJwtToken(user._id.toString())
+    const { userpw: _, ...safeUser } = user // 비밀번호 보안처리
+    console.log("로그인 성공 및 토큰 발급 완료")
+    return res.status(200).json({token, user: safeUser})
+}
+
+// 로그인 유지 체크
+export async function me(req, res) {
+    const {userpw, ...safeUser} = req.user
+    res.status(200).json({token: req.token, user: safeUser})
+}
