@@ -16,4 +16,7 @@ router.post("/login", authController.login)
 // 로그인 유지 체크 + 회원 정보 조회
 router.get("/me", isAuth, authController.me)
 
+// 로그아웃
+router.post("/logout", authController.logout)
+
 export default router

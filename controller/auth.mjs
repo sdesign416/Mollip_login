@@ -75,3 +75,9 @@ export async function me(req, res) {
     const {userpw, ...safeUser} = req.user
     res.status(200).json({token: req.token, user: safeUser})
 }
+
+// 로그아웃
+export async function logout(req, res) {
+    console.log("로그아웃 성공")
+    res.status(200).json({message: "로그아웃되었습니다."})
+}
