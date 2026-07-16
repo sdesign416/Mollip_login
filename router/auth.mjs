@@ -19,4 +19,7 @@ router.get("/me", isAuth, authController.me)
 // 로그아웃
 router.post("/logout", authController.logout)
 
+// 회원 정보 수정
+router.patch("/me", isAuth, authController.meUpdate)
+
 export default router

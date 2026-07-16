@@ -20,3 +20,12 @@ export async function createUser(user) {
 export async function findById(id) {
     return getUser().find({ _id: new MongoDB.ObjectId(id) }).next().then(mapOptionalUser)
 }
+
+// 회원정보 수정
+export async function update(id, nickname, username, email) {
+    const result = await getUser().findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { nickname, username, email } },
+        { returnDocument: "after" }
+    ).then((result) => result)
+}

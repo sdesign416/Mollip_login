@@ -81,3 +81,27 @@ export async function logout(req, res) {
     console.log("로그아웃 성공")
     res.status(200).json({message: "로그아웃되었습니다."})
 }
+
+// 회원 정보 수정 [nickname, username, email]
+export async function meUpdate(req, res) {
+    const {nickname, username, email} = req.body
+
+    // 로그인 한 사용자 조회
+    const user = await authRepository.findById(req.user._id)
+    if (!user) {
+        return res.status(404).json({message: "회원정보를 찾을 수 없습니다."})
+    }
+
+    // 수정
+    const updatedUser = await authRepository.update(
+        req.user._id, nickname, username, email
+    )
+
+    // 비밀번호 제외 응답 (보안)
+    const { userpw, ...safeUser } = updatedUser
+
+    return res.status(200).json({
+        message: "회원정보가 수정되었습니다.",
+        user: safeUser
+    })
+}
