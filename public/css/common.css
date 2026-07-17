@@ -75,11 +75,15 @@ body {
     color: var(--text-color);
 }
 
+main {
+    width: 100%;
+    min-height: 100vh;
+}
+
 a {
     text-decoration: none;
     color: inherit;
 }
-
 
 :root {
     /* Color */
@@ -102,4 +106,15 @@ a {
 
     /* Transition */
     --transition: all 0.2s ease;
+
+    /* form */
+    --form-bg: #f4f4f4;
+    --form-color: #888888;
+}
+
+/* class style */
+.w1720{
+    width: 92%;
+    max-width: 1720px;
+    margin: 0 auto;
 }

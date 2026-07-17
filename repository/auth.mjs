@@ -1,4 +1,4 @@
-import MongoDB from "mongodb"
+import MongoDB, { ObjectId } from "mongodb"
 import {getUser} from "../db/user_database.mjs"
 
 
@@ -28,4 +28,5 @@ export async function update(id, nickname, username, email) {
         { $set: { nickname, username, email } },
         { returnDocument: "after" }
     ).then((result) => result)
+    return result
 }
