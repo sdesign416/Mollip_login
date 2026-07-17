@@ -13,6 +13,10 @@ const submitBtn = document.getElementById("submitBtn")
 
 const studyDays = document.getElementById("studyDays")
 
+const profileEditBtn = document.getElementById("profileEditBtn")
+const profileImageInput = document.getElementById("profileImageInput")
+const profileImg = document.querySelector(".PImgSec .imgBox img")
+
 // 로그아웃
 logoutBtn.addEventListener("click", () => {
     // confirm = true/false 반환값
@@ -80,9 +84,15 @@ async function getUser() {
 
         // 일수 계산: ~일째 표시하기위해 +1함
         const diffDays = Math.floor(diffMS / (1000 * 60 * 60 * 24)) + 1;
-        
         // 출력
         studyDays.textContent = diffDays
+
+        // 저장된 프로필 이미지가 있으면 출력
+        if (user.profileImage) {
+            profileImg.src = user.profileImage
+        } else {
+            profileImg.src = "./images/noprofile.png"   // 없으면 기본 이미지
+        }
 
     }catch (error) {
         console.error("회원정보 조회 오류:", error)
@@ -162,3 +172,99 @@ profileForm.addEventListener("submit", async (e) => {
         alert("회원정보 수정에 실패했습니다.")
     }
 })
+
+
+// 이미지 저장 변수
+let selectedProfileImage = null
+
+// 이미지 수정 버튼 클릭
+profileEditBtn.addEventListener("click", () => {
+    // 이미지가 아직 선택되지 않은 상태
+    if (!selectedProfileImage) {
+        profileImageInput.click()
+        return
+    }
+
+    // 이미지가 선택된 상태라면 서버에 저장
+    uploadProfileImage()
+})
+
+
+// 이미지 선택
+profileImageInput.addEventListener("change", (e) => {
+    const file = e.target.files[0]
+
+    if (!file) return
+
+    // 이미지 파일인지 확인
+    if (!file.type.startsWith("image/")) {
+        alert("이미지 파일만 선택할 수 있습니다.")
+        profileImageInput.value = ""
+        return
+    }
+
+    selectedProfileImage = file
+
+    // 선택한 이미지 미리보기
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+        profileImg.src = e.target.result
+        profileImg.alt = "선택한 프로필 이미지"
+    }
+
+    reader.readAsDataURL(file)
+
+    // 연필 아이콘을 체크 아이콘으로 변경
+    profileEditBtn.innerHTML = '<i class="ri-check-line"></i>'
+})
+
+// 프로필 이미지 서버 저장
+async function uploadProfileImage() {
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+        alert("로그인이 필요합니다.")
+        location.href = "/login.html"
+        return
+    }
+
+    if (!selectedProfileImage) return
+
+    const formData = new FormData()
+
+    // 서버에서 받을 필드명
+    formData.append("profileImage", selectedProfileImage)
+
+    try {
+        profileEditBtn.disabled = true
+
+        const response = await fetch("/auth/profile-image", {
+            method: "PATCH",
+            headers: {Authorization: `Bearer ${token}`},
+            body: formData
+        })
+        const data = await response.json()
+
+        if (!response.ok) {
+            alert(data.message || "프로필 이미지 저장에 실패했습니다.")
+            return
+        }
+
+        alert("프로필 이미지가 저장되었습니다.")
+
+        // 선택 상태 초기화
+        selectedProfileImage = null
+        profileImageInput.value = ""
+
+        // 체크 아이콘을 다시 연필 아이콘으로 변경
+        profileEditBtn.innerHTML = '<i class="ri-pencil-line"></i>'
+
+    } catch (error) {
+        console.error("프로필 이미지 저장 오류:", error)
+        alert("프로필 이미지 저장에 실패했습니다.")
+
+    } finally {
+        profileEditBtn.disabled = false
+    }
+}

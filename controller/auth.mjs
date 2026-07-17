@@ -105,3 +105,28 @@ export async function meUpdate(req, res) {
         user: safeUser
     })
 }
+
+// 프로필 이미지 수정
+export async function updateProfileImage(req, res) {
+    if(!req.file){
+        return res.status(400).json({
+            message: "선택된 이미지가 없습니다."
+        })
+    }
+
+    // 브라우저가 접근할 이미지 주소
+    const profileImage = `/uploads/profile/${req.file.filename}`
+
+    // 이미지 경로 DB에 저장
+    const updatedUser = await authRepository.updateProfileImage(
+        req.user._id, profileImage
+    )
+
+    const { userpw, ...safeUser } = updatedUser
+
+    return res.status(200).json({
+        message: "프로필 이미지가 저장되었습니다.",
+        user: safeUser
+    })
+    
+}

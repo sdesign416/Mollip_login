@@ -1,6 +1,7 @@
 import express from "express"
 import * as authController from "../controller/auth.mjs"
 import { isAuth } from "../middleware/auth.mjs"
+import { uploadProfile } from "../middleware/profile_upload.mjs"
 
 const router = express.Router()
 
@@ -21,5 +22,13 @@ router.post("/logout", authController.logout)
 
 // 회원 정보 수정
 router.patch("/me", isAuth, authController.meUpdate)
+
+// 프로필 이미지 수정
+router.patch(
+    "/profile-image", 
+    isAuth, 
+    uploadProfile.single("profileImage"),
+    authController.updateProfileImage
+)
 
 export default router
