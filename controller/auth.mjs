@@ -27,7 +27,7 @@ export async function signup(req, res) {
 
     // 실제 가입
     const userInsertedId = await authRepository.createUser(
-        {userid, userpw: hashed, nickname, username, email}
+        {userid, userpw: hashed, nickname, username, email, createdAt: new Date()}
     )
 
     // 가입완료 후

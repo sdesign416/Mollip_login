@@ -11,6 +11,8 @@ const editAct = document.getElementById("editAct")
 const cancelBtn = document.getElementById("cancelBtn")
 const submitBtn = document.getElementById("submitBtn")
 
+const studyDays = document.getElementById("studyDays")
+
 // 로그아웃
 logoutBtn.addEventListener("click", () => {
     // confirm = true/false 반환값
@@ -62,8 +64,26 @@ async function getUser() {
         nickname.value = user.nickname
         username.value = user.username
         email.value = user.email
+        // console.log("회원정보:", user)
 
-        console.log("회원정보:", user)
+        // 공부한 날짜 계산(가입일~현재)
+        const joinDate = new Date(user.createdAt) // 가입일 설정
+        const today = new Date()    // 오늘날짜 가져옴
+        console.log("createdAt 원본:", user.createdAt)
+
+        // 두 날짜 시, 분, 초 맞춤
+        joinDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+
+        // 밀리초 차이 구함
+        const diffMS = today.getTime() - joinDate.getTime();
+
+        // 일수 계산: ~일째 표시하기위해 +1함
+        const diffDays = Math.floor(diffMS / (1000 * 60 * 60 * 24)) + 1;
+        
+        // 출력
+        studyDays.textContent = diffDays
+
     }catch (error) {
         console.error("회원정보 조회 오류:", error)
         alert("회원정보를 불러오지 못했습니다.")
